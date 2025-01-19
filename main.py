@@ -2,6 +2,8 @@ from playsound import playsound
 import speech_recognition as sr
 from googletrans import Translator
 from gtts import gTTS
+import google.generativeai as genai
+from dotenv import load_dotenv
 import os
 
 # Function to capture voice input
@@ -44,6 +46,39 @@ def save_conversation_to_file(conversation):
     with open("conversation.txt", "w") as file:  # Write all at once after the loop
         file.writelines([line + "\n" for line in conversation])
 
+# Function to summarize the conversation using AI
+def summarize_conversation(conversation):
+    load_dotenv()
+    api_key = os.getenv("google-api-key")
+    
+    if not api_key:
+        print("API key for Generative AI is missing. Please check your environment variables.")
+        return
+
+    genai.configure(api_key=api_key)
+    
+    # Prepare the conversation as input for the model
+    conversation_text = "\n".join(conversation)
+    prompt = (
+        "Summarize the following conversation between a doctor and a patient. "
+        "Provide a summary of the patient's condition, doctor's recommendation and any other additional info:\n\n"
+        f"{conversation_text}"
+    )
+
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        print("\nGenerated Summary and Recommendations:\n")
+        print(response.text)
+
+        # Save the summary and recommendations to a file
+        with open("conversation_summary.txt", "w") as file:
+            file.write(response.text)
+
+        print("Summary saved to conversation_summary.txt.")
+    except Exception as e:
+        print(f"Error generating summary: {e}")
+
 # Main conversation loop
 def continuous_conversation():
     print("Starting conversation. Say 'stop' to end.")
@@ -77,6 +112,19 @@ def continuous_conversation():
     save_conversation_to_file(conversation)
     print("Conversation saved to conversation.txt.")
 
+    # Generate summary and recommendations
+    summarize_conversation(conversation)
+
+
+
 # Run the program
 if __name__ == "__main__":
     continuous_conversation()
+
+
+    
+
+
+
+
+

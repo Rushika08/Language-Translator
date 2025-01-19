@@ -1,0 +1,9 @@
+# pip install -r requirements.txt
+
+google-generativeai
+python-dotenv
+SpeechRecognition
+googletrans==4.0.0-rc1
+gTTS
+playsound==1.2.2
+pyaudio

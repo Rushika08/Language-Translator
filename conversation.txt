@@ -1,2 +1,6 @@
-Doctor: hello can you hear me
-Patient: Happy New Year
+Doctor: hello
+Patient: Hello
+Doctor: what is your disease
+Patient: I have
+Doctor: can you repeat
+Patient: There are obliges
