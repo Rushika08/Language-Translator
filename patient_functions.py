@@ -62,15 +62,18 @@ def get_all_patients():
     return patients
 
 
-def get_patient_history(patient_name):
+def get_patient_history(patient_username):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT date, summary
-        FROM conversations
-        WHERE patient_id = (SELECT patient_id FROM patients WHERE name = ?)
-    """, (patient_name,))
+        SELECT p.name, p.date_of_birth, p.gender, d.name, c.created_at, c.summary, 
+            c.conversation_id, c.patient_id, p.contact_info, d.contact_info, p.language
+        FROM conversations AS c
+        INNER JOIN patients AS p ON c.patient_id = p.patient_id
+        INNER JOIN doctors AS d ON c.doctor_id = d.doctor_id
+        WHERE c.patient_id = ?
+    """, (patient_username,))
     
     records = cursor.fetchall()
     conn.close()
@@ -78,9 +81,39 @@ def get_patient_history(patient_name):
     patient_history = []
     for record in records:
         patient_history.append({
-            "date": record[0],
-            "summary": record[1]
+            "patient_name": record[0],
+            "date_of_birth": record[1],
+            "gender": record[2],
+            "doctor_name": record[3],
+            "date": record[4],
+            "summary": record[5],
+            "conversation_id": record[6],
+            "patient_id": record[7],
+            "patient_contact_info": record[8],
+            "doctor_contact_info": record[9],
+            "patient_language": record[10]
         })
 
     return patient_history
 
+def add_patient_visit(doctor_id, patient_username, summary):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT patient_id
+        FROM patients
+        WHERE username = ?
+    """, (patient_username,))
+
+    patient_id = cursor.fetchone()[0]
+
+    cursor.execute("""
+        INSERT INTO conversations (doctor_id, patient_id, summary)
+        VALUES (?, ?, ?)
+    """, (doctor_id, patient_id, summary))
+    
+    conn.close()
+    return "Patient visit added successfully."
+                   
+    

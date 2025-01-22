@@ -75,17 +75,27 @@ def doctor_panel(username):
     doctor_menu = ["Record new patient visit", "Add New Patient", "View My Info", "View Patient History"]
     choice = st.sidebar.radio("Doctor Options", doctor_menu)
 
-    if choice == "Record new patient visit":
+    if choice == "Record new patient visit":     
+        if st.button("Check Patient History"):
+            patient_username = st.text_input("Patient Username/ID")
+            if patient_username:
+                patient_history = get_patient_history(patient_username)
+                if patient_history:
+                    for record in patient_history:
+                        st.write(f"Date: {record['date']}, Summary: {record['summary']}")
+                else:
+                    st.info(f"No medical history found for {patient_name}.")
+
         st.subheader("Record a New Patient Visit")
         patient_username = st.text_input("Patient User Name")
         summary = st.text_area("Summary")
         
-        if st.button("Record Visit"):
+        if st.button("Submit"):
             add_patient_visit(patient_name, summary)
             st.success("Visit recorded successfully!")
 
-    elif choice == "Add New Patient Record":
-        st.subheader("Add a New Patient Record")
+    elif choice == "Add New Patient":
+        st.subheader("Add a New Patient")
         patient_username = st.text_input("Patient Username")
         patient_password = st.text_input("Patient Password", type="password")
         name = st.text_input("Patient Name")
