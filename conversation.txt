@@ -1,7 +1,2 @@
 Doctor: hello
 Patient: Hello
-Doctor: what is your disease
-Patient: Have coughing
-Doctor: how long
-Patient: About two to three days
-Doctor: i will give you some medicine
