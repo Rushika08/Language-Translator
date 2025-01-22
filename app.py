@@ -1,6 +1,6 @@
 import streamlit as st
 from user_functions import login, admin_panel, create_admin_in_db, hash_password, check_admin_exists
-from doctor_functions import add_doctor
+from doctor_functions import doctor_panel,add_doctor
 from patient_functions import add_patient
 from healthcare_db import create_tables
 
@@ -81,20 +81,21 @@ if st.session_state.logged_in:
         admin_panel()
     elif st.session_state.role == "Doctor":
         st.subheader("Doctor Panel")
-        st.info("Add a new patient")
-        patient_username = st.text_input("Patient Username")
-        patient_password = st.text_input("Patient Password", type="password")
-        patient_name = st.text_input("Patient Name")
-        patient_dob = st.date_input("Patient Date of Birth")
-        patient_gender = st.selectbox("Patient Gender", ["Male", "Female", "Other"])
-        patient_contact = st.text_input("Patient Contact Info")
-        patient_language = st.text_input("Patient Language")
-        if st.button("Add Patient"):
-            if all([patient_username, patient_password, patient_name, patient_contact, patient_language]):
-                add_patient(patient_username, patient_password, patient_name, patient_dob, patient_gender, patient_contact, patient_language)
-                st.success(f"Patient {patient_name} added successfully!")
-            else:
-                st.error("Please fill in all required fields.")
+        doctor_panel(st.session_state.username)
+        # st.info("Add a new patient")
+        # patient_username = st.text_input("Patient Username")
+        # patient_password = st.text_input("Patient Password", type="password")
+        # patient_name = st.text_input("Patient Name")
+        # patient_dob = st.date_input("Patient Date of Birth")
+        # patient_gender = st.selectbox("Patient Gender", ["Male", "Female", "Other"])
+        # patient_contact = st.text_input("Patient Contact Info")
+        # patient_language = st.text_input("Patient Language")
+        # if st.button("Add Patient"):
+        #     if all([patient_username, patient_password, patient_name, patient_contact, patient_language]):
+        #         add_patient(patient_username, patient_password, patient_name, patient_dob, patient_gender, patient_contact, patient_language)
+        #         st.success(f"Patient {patient_name} added successfully!")
+        #     else:
+        #         st.error("Please fill in all required fields.")
 
     elif st.session_state.role == "Patient":
         st.subheader("Patient Panel")

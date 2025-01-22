@@ -1,15 +1,15 @@
 from healthcare_db import get_connection
 import streamlit as st
-from patient_functions import get_patient_history, add_patient
+from patient_functions import get_patient_history, add_patient, add_patient_visit
 
 def get_doctor_info(username):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT doctor_id, user_id, username, name, specialization, contact_info, language
-        FROM doctors
-        INNER JOIN users ON doctors.user_id = users.user_id
+        SELECT d.doctor_id, d.user_id, u.username, d.name, d.specialization, d.contact_info, d.language
+        FROM doctors AS d
+        INNER JOIN users AS u ON d.user_id = u.user_id
         WHERE username = ?
     """, (username,))
     
@@ -68,14 +68,23 @@ def get_all_doctors():
     conn.close()
     return doctors
 
-def doctor_panel():
+def doctor_panel(username):
     st.title("Doctor Panel")
 
     # Menu for Doctor Options
-    doctor_menu = ["Add New Patient Record", "View My Info", "View Patient History"]
+    doctor_menu = ["Record new patient visit", "Add New Patient", "View My Info", "View Patient History"]
     choice = st.sidebar.radio("Doctor Options", doctor_menu)
 
-    if choice == "Add New Patient Record":
+    if choice == "Record new patient visit":
+        st.subheader("Record a New Patient Visit")
+        patient_username = st.text_input("Patient User Name")
+        summary = st.text_area("Summary")
+        
+        if st.button("Record Visit"):
+            add_patient_visit(patient_name, summary)
+            st.success("Visit recorded successfully!")
+
+    elif choice == "Add New Patient Record":
         st.subheader("Add a New Patient Record")
         patient_username = st.text_input("Patient Username")
         patient_password = st.text_input("Patient Password", type="password")
@@ -91,12 +100,15 @@ def doctor_panel():
 
     elif choice == "View My Info":
         st.subheader("Doctor Info")
-        doctor_info = get_doctor_info(st.session_state.username)
+        doctor_info = get_doctor_info(username)
         if doctor_info:
             st.write(f"Name: {doctor_info['name']}")
+            st.write(f"Username: {doctor_info['username']}")
             st.write(f"Specialization: {doctor_info['specialization']}")
             st.write(f"Contact: {doctor_info['contact_info']}")
             st.write(f"Language: {doctor_info['language']}")
+            st.write(f"Doctor ID: {doctor_info['doctor_id']}")
+            st.write(f"User ID: {doctor_info['user_id']}")
         else:
             st.info("Doctor info not available.")
 
