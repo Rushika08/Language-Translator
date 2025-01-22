@@ -1,2 +1,3 @@
 .env
 ethnic/
+__pycache__/
