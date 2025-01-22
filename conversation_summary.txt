@@ -1,14 +1,1 @@
-The conversation is extremely brief and unclear.  The patient fails to adequately describe their ailment, stating only "I have" followed by what seems to be a misspelling or a word ("obliges") that doesn't provide medical context.  Therefore, no proper summary of the patient's disease can be given.
-
-**Summary:**  The doctor initiated a consultation, but the patient failed to effectively communicate their medical issue.
-
-**Recommendations:**
-
-* **The patient needs to schedule a proper appointment:**  This fragmented conversation is insufficient for any diagnosis or treatment.  The patient must return for a full consultation, clearly and thoroughly describing their symptoms, medical history, and any relevant concerns.
-* **The patient should prepare a list of symptoms:**  This will help ensure all relevant information is conveyed to the doctor.  Include onset, duration, frequency, severity, and any associated symptoms.
-* **The patient should clarify "obliges":** If this was meant to be a symptom or description of a condition, the patient should correct the spelling or find a more accurate way to describe it.
-* **The patient should consider bringing a friend or family member:** Having someone else present to help articulate concerns might be beneficial if communication is difficult.
-* **The doctor needs to improve communication techniques:** While the patient's description is inadequate, the doctor's questions could be more open-ended and empathetic.  For example, instead of "what is your disease?",  a better approach would be "Can you tell me what's been bothering you?".
-
-
-In short, this conversation highlights the importance of clear and comprehensive communication between doctor and patient for effective healthcare.
+A patient reported a cough lasting two to three days.  The doctor prescribed medication.  No further details on the diagnosis or the specific medication were provided.

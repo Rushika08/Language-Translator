@@ -46,6 +46,7 @@ def create_tables():
             gender TEXT CHECK(gender IN ('Male', 'Female', 'Other')) NOT NULL,
             contact_info TEXT,
             language TEXT,
+            email TEXT,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
     """)

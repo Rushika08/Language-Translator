@@ -21,7 +21,7 @@ def add_patient(username, password, name, date_of_birth, gender, contact_info, l
     conn.commit()
     conn.close()
 
-def add_patient(username, password, name, date_of_birth, gender, contact_info, language):
+def add_patient(username, password, name, date_of_birth, gender, contact_info, language, email=None):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -35,9 +35,9 @@ def add_patient(username, password, name, date_of_birth, gender, contact_info, l
 
         # Add patient
         cursor.execute("""
-            INSERT INTO patients (user_id, name, date_of_birth, gender, contact_info, language)
+            INSERT INTO patients (user_id, name, date_of_birth, gender, contact_info, language, email)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (user_id, name, date_of_birth, gender, contact_info, language))
+        """, (user_id, name, date_of_birth, gender, contact_info, language, email))
         conn.commit()
 
         print(f"Patient {name} added successfully.")

@@ -81,32 +81,89 @@ def summarize_conversation(conversation):
 
 # Main conversation loop
 def continuous_conversation():
-    print("Starting conversation. Say 'stop' to end.")
+    print("Starting conversation. Press 's' to end.")
     doctor_lang = 'en'
     patient_lang = 'si'
 
     conversation = []  # List to store the conversation in text
+    continue_options = ["c", "r", "s"]
 
     while True:
-        # Doctor's turn
-        print("Doctor's turn:")
-        doctor_query = take_command(doctor_lang)
-        if doctor_query is None or "stop" in doctor_query:
-            print("Conversation ended.")
-            break
-        translated_doctor_query = translate_and_speak(doctor_query, dest_lang=patient_lang, src_lang=doctor_lang)
-        conversation.append(f"Doctor: {doctor_query}")
-        # conversation.append(f"Patient (translated): {translated_doctor_query}")
+        while True:
+            # Doctor's turn
+            print("Doctor's turn:")
+            doctor_query = take_command(doctor_lang)
+            if doctor_query is None: # or "stop" in doctor_query:
+                print("Could not recognize input. Try again.")
+                continue
+            translated_doctor_query = translate_and_speak(doctor_query, dest_lang=patient_lang, src_lang=doctor_lang)
+            print("Doctor's query recorded.")
+            # conversation.append(f"Patient (translated): {translated_doctor_query}")
 
-        # Patient's turn
-        print("Patient's turn:")
-        patient_query = take_command(patient_lang)
-        if patient_query is None or "stop" in patient_query:
-            print("Conversation ended.")
-            break
-        translated_patient_query = translate_and_speak(patient_query, dest_lang=doctor_lang, src_lang=patient_lang)
-        # conversation.append(f"Patient: {patient_query}")
-        conversation.append(f"Patient: {translated_patient_query}")
+            # Prompt options for the doctor
+            print("Press 'c' to continue, 'r' to repeat, or 's' to stop the conversation.")
+            doctor_choice = input("Your choice: ").lower()
+            while doctor_choice not in continue_options:
+                print("Invalid choice. Please press 'c', 'r', or 's.")
+                doctor_choice = input("Your choice: ").lower()
+            
+            if doctor_choice == "s":
+                conversation.append(f"Doctor: {doctor_query}")
+                print("Conversation ended.")
+                save_conversation_to_file(conversation)
+                print("Conversation saved to conversation.txt.")
+                summarize_conversation(conversation)
+                return
+            elif doctor_choice == "r":
+                print("Repeat the query...")
+                continue
+            elif doctor_choice == "c":
+                conversation.append(f"Doctor: {doctor_query}")
+                break
+
+        while True:
+            # Patient's turn
+            print("Patient's turn:")
+            patient_query = take_command(patient_lang)
+            if patient_query is None: # or "stop" in patient_query:
+                print("Could not recognize input. Try again.")
+                continue
+
+            translated_patient_query = translate_and_speak(patient_query, dest_lang=doctor_lang, src_lang=patient_lang)
+            print("Patient's query recorded.")
+            # conversation.append(f"Patient (translated): {translated_patient_query}")
+
+            # Prompt options for the patient
+            print("Press 'c' to continue, 'r' to repeat, or 's' to stop the conversation.")
+            patient_choice = input("Your choice: ").lower()
+            while patient_choice not in continue_options:
+                print("Invalid choice. Please press 'c', 'r', or 's.")
+                patient_choice = input("Your choice: ").lower()
+            
+            if patient_choice == "s":
+                conversation.append(f"Patient: {translated_patient_query}")
+                print("Conversation ended.")
+                save_conversation_to_file(conversation)
+                print("Conversation saved to conversation.txt.")
+                summarize_conversation(conversation)
+                return
+            elif patient_choice == "r":
+                print("Repeat the query...")
+                continue
+            elif patient_choice == "c":
+                conversation.append(f"Patient: {translated_patient_query}")
+                break
+
+
+        # # Patient's turn
+        # print("Patient's turn:")
+        # patient_query = take_command(patient_lang)
+        # if patient_query is None or "stop" in patient_query:
+        #     print("Conversation ended.")
+        #     break
+        # translated_patient_query = translate_and_speak(patient_query, dest_lang=doctor_lang, src_lang=patient_lang)
+        # # conversation.append(f"Patient: {patient_query}")
+        # conversation.append(f"Patient: {translated_patient_query}")
 
     # Save the conversation to a file
     save_conversation_to_file(conversation)
