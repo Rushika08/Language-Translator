@@ -1,6 +1,9 @@
 from healthcare_db import get_connection
-import streamlit as st
 from patient_functions import get_patient_history, add_patient, add_patient_visit
+from recording_page import recognize_speech, translate_and_speak, summarize_conversation
+import streamlit as st
+from audio_recorder_streamlit import audio_recorder
+
 
 def get_doctor_info(username):
     conn = get_connection()
@@ -72,27 +75,114 @@ def doctor_panel(username):
     st.title("Doctor Panel")
 
     # Menu for Doctor Options
-    doctor_menu = ["Record new patient visit", "Add New Patient", "View My Info", "View Patient History"]
+    doctor_menu = ["Record new patient visit", "Conversation Assistant", "Add New Patient", "View My Info", "View Patient History"]
     choice = st.sidebar.radio("Doctor Options", doctor_menu)
 
     if choice == "Record new patient visit":     
-        if st.button("Check Patient History"):
-            patient_username = st.text_input("Patient Username/ID")
-            if patient_username:
+        # if st.button("Check Patient History"):
+        #     patient_username = st.text_input("Patient Username/ID")
+        #     # if patient_username:
+        #     if st.button("Submit"):
+        #         st.write("Hi")
+        #         patient_history = get_patient_history(patient_username)
+        #         if patient_history:
+        #             for record in patient_history:
+        #                 st.write(f"Date: {record['date']}, Summary: {record['summary']}")
+        #         else:
+        #             st.info(f"No medical history found for {patient_name}.")
+
+        # st.subheader("Record a New Patient Visit")
+        # patient_username = st.text_input("Patient User Name")
+        # summary = st.text_area("Summary")
+        
+        # # if st.button("Submit"):
+        # #     add_patient_visit(patient_name, summary)
+        # #     st.success("Visit recorded successfully!")
+        st.subheader("Check Patient History")
+
+        patient_username = st.text_input("Enter Patient Username/ID")  # Input should be defined before the button
+        
+        if st.button("Check History"):
+            if patient_username:  # Ensure a username is entered
                 patient_history = get_patient_history(patient_username)
+                
                 if patient_history:
+                    st.subheader(f"Medical History for {patient_username}")
                     for record in patient_history:
-                        st.write(f"Date: {record['date']}, Summary: {record['summary']}")
+                        st.write(f"📅 Date: {record['date']}")
+                        st.write(f"📝 Summary: {record['summary']}")
+                        st.write("---")  # Separator for readability
                 else:
-                    st.info(f"No medical history found for {patient_name}.")
+                    st.info(f"No medical history found for {patient_username}.")
+            else:
+                st.warning("Please enter a patient username before checking history.")
 
         st.subheader("Record a New Patient Visit")
+        
         patient_username = st.text_input("Patient User Name")
         summary = st.text_area("Summary")
         
-        if st.button("Submit"):
-            add_patient_visit(patient_name, summary)
-            st.success("Visit recorded successfully!")
+        if st.button("Submit Visit"):
+            if patient_username and summary:
+                add_patient_visit(51, patient_username, summary)
+                st.success(f"Visit recorded successfully for {patient_username}!")
+            else:
+                st.warning("Please enter both patient username and summary.")
+    
+    elif choice == "Conversation Assistant":
+        st.subheader("Doctor-Patient Conversation Assistant")
+        
+        # Language selection
+        st.subheader("Select Language Preferences")
+        doctor_lang = st.selectbox("Doctor's Language", ["en", "si", "ta", "es", "fr", "de", "it", "pt", "ru", "ja", "ko", "zh-CN"])
+        patient_lang = st.selectbox("Patient's Language", ["si", "en", "ta", "es", "fr", "de", "it", "pt", "ru", "ja", "ko", "zh-CN"])
+
+        # Role selection
+        role = st.radio("Select Your Role", ["Doctor", "Patient"])
+        st.write(f"**{role} Role Selected**")
+
+        # Audio Recording
+        st.subheader("Record Your Speech")
+        audio_bytes = audio_recorder()
+
+        if "conversation" not in st.session_state:
+            st.session_state.conversation = []
+
+        if audio_bytes:
+            # Recognize speech based on selected role
+            language = doctor_lang if role == "Doctor" else patient_lang
+            recognized_text = recognize_speech(language, audio_bytes)
+
+            # If speech was recognized, translate and generate speech
+            if recognized_text:
+                dest_lang = patient_lang if role == "Doctor" else doctor_lang
+                src_lang = doctor_lang if role == "Doctor" else patient_lang
+
+                translated_text, translated_audio = translate_and_speak(recognized_text, dest_lang, src_lang)
+                
+                # Play translated speech
+                if translated_audio:
+                    st.audio(translated_audio, format="audio/mp3")
+
+                if translated_text:
+                    st.write(f"**Recognized Text ({language}):** {recognized_text}")
+                    st.write(f"**Translated Text ({dest_lang}):** {translated_text}")
+                    
+                    if st.button("Append to Conversation"):
+                        if role == "Doctor":
+                            st.session_state.conversation.append(f"Doctor: {recognized_text}")
+                        else:
+                            st.session_state.conversation.append(f"Patient: {translated_text}")
+
+        # Display conversation history
+        if st.session_state.conversation:
+            st.subheader("Conversation History")
+            for entry in st.session_state.conversation:
+                st.write(entry)
+
+        # Button to summarize conversation
+        if st.button("Summarize Conversation") and st.session_state.conversation:
+            summarize_conversation(st.session_state.conversation)
 
     elif choice == "Add New Patient":
         st.subheader("Add a New Patient")

@@ -1,2 +1,9 @@
 Doctor: hello
 Patient: Hello
+Doctor: how r u
+Patient: My health is not
+Doctor: what your disease
+Patient: I'm coughing
+Doctor: so how long
+Patient: One month
+Doctor: ok i will give you some medicine

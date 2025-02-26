@@ -5,11 +5,12 @@ cursor = conn.cursor()
 # username = 'admin'
 cursor.execute("""
         SELECT *
-        FROM users
+        FROM patients
     """)
 
-users = cursor.fetchall()
+doctor_info = cursor.fetchall()
+conn.close()
 
 # patients = [{"name": row[0], "contact_info": row[1], "gender": row[2], "date_of_birth": row[3]} for row in cursor.fetchall()]
-print(users)
+print(doctor_info)
 conn.close()
